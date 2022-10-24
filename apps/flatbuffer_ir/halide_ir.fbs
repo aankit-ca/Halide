@@ -1,7 +1,7 @@
 // TODO: go through enums and decide if the types give enough bits for expansion.
 // TODO: should likely figure out how to break this up into multiple files
 
-namespace Halide.IR;
+namespace Halide.FlatBufferIR;
 
 // This corresponds to the version.
 file_identifier "HLD0";
@@ -33,7 +33,7 @@ table IRType {
     runtime_type: RuntimeType;
     cpp_handle_type: CPPHandleType;
 }
-    
+
 table Symbol {
     name: string;
     parent: Symbol;
@@ -191,7 +191,7 @@ table Select {
     false_value: Expr;
 }
 
-table Dimension {
+struct Dimension {
     min: int64;
     extent: int64;
     stride: int64;
@@ -219,8 +219,7 @@ table BufferDescriptor {
 }
 
 table BufferConstant {
-    name: Symbol;
-    shape: BufferShape;
+    buffer: BufferDescriptor;
     data: [ubyte];
 }
 
@@ -254,8 +253,8 @@ enum MemoryKind: ubyte {
 }
 
 table BufferParameter {
-    buffer: BufferDescriptor;
     name: Symbol;
+    buffer: BufferDescriptor;
     memory_kind: MemoryKind;
     host_alignment: uint32;
     buffer_constraints: [BufferConstraint];
@@ -566,7 +565,7 @@ enum LoopAlignStrategy: ubyte {
 table LoopLevel {
     // TODO: Can this just be a Func ref in the serialization?
     func_name: Symbol;
-    // TODO C++ struct has -1 meaning the entire function. Field could be left out ti indicate that.
+    // TODO C++ struct has -1 meaning the entire function. Field could be left out to indicate that.
     stage: int32;
     variable: Variable;
     is_rvar: bool;    
